@@ -1,3 +1,3 @@
 # {{name}}
 
-The {{jsOS}} {{jsArch}} binary for dbmate. See https://github.com/amacneil/dbmate for details.
+The {{jsOS}} {{jsArch}} binary for dbmate. See https://github.com/loicalleyne/dbmate for details.

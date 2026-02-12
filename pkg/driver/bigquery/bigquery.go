@@ -16,8 +16,8 @@ import (
 	"google.golang.org/api/iterator"
 	_ "gorm.io/driver/bigquery" // database/sql driver
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
-	"github.com/amacneil/dbmate/v2/pkg/dbutil"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbutil"
 )
 
 func init() {

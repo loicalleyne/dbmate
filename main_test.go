@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
 )
 
 func TestGetDatabaseUrl(t *testing.T) {

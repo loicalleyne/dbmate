@@ -25,4 +25,4 @@ formatters:
   settings:
     goimports:
       local-prefixes:
-        - github.com/amacneil/dbmate
+        - github.com/loicalleyne/dbmate

@@ -14,7 +14,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbutil"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbutil"
 )
 
 // Error codes
@@ -452,7 +452,7 @@ func (db *DB) readMigrationsDir(dir string) ([]fs.DirEntry, error) {
 
 	// We use nil instead of os.DirFS() because DirFS cannot support both relative and absolute
 	// directory paths - it must be anchored at either "." or "/", which we do not know in advance.
-	// See: https://github.com/amacneil/dbmate/issues/403
+	// See: https://github.com/loicalleyne/dbmate/issues/403
 	if db.FS == nil {
 		return os.ReadDir(path)
 	}

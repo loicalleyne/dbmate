@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
-	"github.com/amacneil/dbmate/v2/pkg/dbtest"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbtest"
 
 	"github.com/stretchr/testify/require"
 )

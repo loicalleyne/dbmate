@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
-	"github.com/amacneil/dbmate/v2/pkg/dbutil"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbutil"
 
 	_ "github.com/go-sql-driver/mysql" // database/sql driver
 )

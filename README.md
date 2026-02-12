@@ -1,8 +1,8 @@
 # Dbmate
 
-[![Release](https://img.shields.io/github/release/amacneil/dbmate.svg)](https://github.com/amacneil/dbmate/releases)
-[![Go Report](https://goreportcard.com/badge/github.com/amacneil/dbmate)](https://goreportcard.com/report/github.com/amacneil/dbmate)
-[![Reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/amacneil/dbmate/v2/pkg/dbmate)
+[![Release](https://img.shields.io/github/release/loicalleyne/dbmate.svg)](https://github.com/loicalleyne/dbmate/releases)
+[![Go Report](https://goreportcard.com/badge/github.com/loicalleyne/dbmate)](https://goreportcard.com/report/github.com/loicalleyne/dbmate)
+[![Reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/loicalleyne/dbmate/v2/pkg/dbmate)
 
 Dbmate is a database migration tool that will keep your database schema in sync across multiple developers and your production servers.
 
@@ -78,7 +78,7 @@ dbmate --help
 Install the binary directly:
 
 ```sh
-sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
+sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/loicalleyne/dbmate/releases/latest/download/dbmate-linux-amd64
 sudo chmod +x /usr/local/bin/dbmate
 /usr/local/bin/dbmate --help
 ```
@@ -94,18 +94,18 @@ dbmate --help
 
 **Docker**
 
-Docker images are published to GitHub Container Registry ([`ghcr.io/amacneil/dbmate`](https://ghcr.io/amacneil/dbmate)).
+Docker images are published to GitHub Container Registry ([`ghcr.io/loicalleyne/dbmate`](https://ghcr.io/loicalleyne/dbmate)).
 
-Remember to set `--network=host` or see [this comment](https://github.com/amacneil/dbmate/issues/128#issuecomment-615924611) for more tips on using dbmate with docker networking):
+Remember to set `--network=host` or see [this comment](https://github.com/loicalleyne/dbmate/issues/128#issuecomment-615924611) for more tips on using dbmate with docker networking):
 
 ```sh
-docker run --rm -it --network=host ghcr.io/amacneil/dbmate --help
+docker run --rm -it --network=host ghcr.io/loicalleyne/dbmate --help
 ```
 
 If you wish to create or apply migrations, you will need to use Docker's [bind mount](https://docs.docker.com/storage/bind-mounts/) feature to make your local working directory (`pwd`) available inside the dbmate container:
 
 ```sh
-docker run --rm -it --network=host -v "$(pwd)/db:/db" ghcr.io/amacneil/dbmate new create_users_table
+docker run --rm -it --network=host -v "$(pwd)/db:/db" ghcr.io/loicalleyne/dbmate new create_users_table
 ```
 
 ## Commands
@@ -360,7 +360,7 @@ bigquery://host:port/projectid/location/dataset?disable_auth=true
 
 #### Spanner
 
-Spanner support is currently limited to databases using the [PostgreSQL Dialect](https://cloud.google.com/spanner/docs/postgresql-interface), which must be chosen during database creation. For future Spanner with GoogleSQL support, see [this discussion](https://github.com/amacneil/dbmate/discussions/369).
+Spanner support is currently limited to databases using the [PostgreSQL Dialect](https://cloud.google.com/spanner/docs/postgresql-interface), which must be chosen during database creation. For future Spanner with GoogleSQL support, see [this discussion](https://github.com/loicalleyne/dbmate/discussions/369).
 
 Spanner with the Postgres interface requires that the [PGAdapter](https://cloud.google.com/spanner/docs/pgadapter) is running. Use the following format for `DATABASE_URL`, with the host and port set to where the PGAdapter is running:
 
@@ -439,7 +439,7 @@ Writing: ./db/schema.sql
 
 > Note: `dbmate up` will create the database if it does not already exist (assuming the current user has permission to create databases). If you want to run migrations without creating the database, run `dbmate migrate`.
 
-Pending migrations are always applied in numerical order. However, dbmate does not prevent migrations from being applied out of order if they are committed independently (for example: if a developer has been working on a branch for a long time, and commits a migration which has a lower version number than other already-applied migrations, dbmate will simply apply the pending migration). See [#159](https://github.com/amacneil/dbmate/issues/159) for a more detailed explanation.
+Pending migrations are always applied in numerical order. However, dbmate does not prevent migrations from being applied out of order if they are committed independently (for example: if a developer has been working on a branch for a long time, and commits a migration which has a lower version number than other already-applied migrations, dbmate will simply apply the pending migration). See [#159](https://github.com/loicalleyne/dbmate/issues/159) for a more detailed explanation.
 
 ### Rolling Back Migrations
 
@@ -551,8 +551,8 @@ package main
 import (
 	"net/url"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
-	_ "github.com/amacneil/dbmate/v2/pkg/driver/sqlite"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
+	_ "github.com/loicalleyne/dbmate/v2/pkg/driver/sqlite"
 )
 
 func main() {
@@ -566,7 +566,7 @@ func main() {
 }
 ```
 
-See the [reference documentation](https://pkg.go.dev/github.com/amacneil/dbmate/v2/pkg/dbmate) for more options.
+See the [reference documentation](https://pkg.go.dev/github.com/loicalleyne/dbmate/v2/pkg/dbmate) for more options.
 
 ### Embedding migrations
 
@@ -582,8 +582,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
-	_ "github.com/amacneil/dbmate/v2/pkg/driver/sqlite"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
+	_ "github.com/loicalleyne/dbmate/v2/pkg/driver/sqlite"
 )
 
 //go:embed db/migrations/*.sql
@@ -657,7 +657,7 @@ You can customize the name of this table using the `--migrations-table` flag or 
 
 Why another database schema migration tool? Dbmate was inspired by many other tools, primarily [Active Record Migrations](http://guides.rubyonrails.org/active_record_migrations.html), with the goals of being trivial to configure, and language & framework independent. Here is a comparison between dbmate and other popular migration tools.
 
-|                                                              | [dbmate](https://github.com/amacneil/dbmate) | [goose](https://github.com/pressly/goose) | [sql-migrate](https://github.com/rubenv/sql-migrate) | [golang-migrate](https://github.com/golang-migrate/migrate) | [activerecord](http://guides.rubyonrails.org/active_record_migrations.html) | [sequelize](http://docs.sequelizejs.com/manual/tutorial/migrations.html) | [flyway](https://flywaydb.org/) | [sqitch](https://sqitch.org/) |
+|                                                              | [dbmate](https://github.com/loicalleyne/dbmate) | [goose](https://github.com/pressly/goose) | [sql-migrate](https://github.com/rubenv/sql-migrate) | [golang-migrate](https://github.com/golang-migrate/migrate) | [activerecord](http://guides.rubyonrails.org/active_record_migrations.html) | [sequelize](http://docs.sequelizejs.com/manual/tutorial/migrations.html) | [flyway](https://flywaydb.org/) | [sqitch](https://sqitch.org/) |
 | ------------------------------------------------------------ | :------------------------------------------: | :---------------------------------------: | :--------------------------------------------------: | :---------------------------------------------------------: | :-------------------------------------------------------------------------: | :----------------------------------------------------------------------: | :-----------------------------: | :---------------------------: |
 | **Features**                                                 |
 | Plain SQL migration files                                    |              :white_check_mark:              |            :white_check_mark:             |                  :white_check_mark:                  |                     :white_check_mark:                      |                                                                             |                                                                          |       :white_check_mark:        |      :white_check_mark:       |
@@ -676,7 +676,7 @@ Why another database schema migration tool? Dbmate was inspired by many other to
 | SQLite                                                       |              :white_check_mark:              |            :white_check_mark:             |                  :white_check_mark:                  |                     :white_check_mark:                      |                             :white_check_mark:                              |                            :white_check_mark:                            |       :white_check_mark:        |      :white_check_mark:       |
 | CliсkHouse                                                   |              :white_check_mark:              |                                           |                                                      |                     :white_check_mark:                      |                             :white_check_mark:                              |                            :white_check_mark:                            |                                 |
 
-_If you notice any inaccuracies in this table, please [propose a change](https://github.com/amacneil/dbmate/edit/main/README.md)._
+_If you notice any inaccuracies in this table, please [propose a change](https://github.com/loicalleyne/dbmate/edit/main/README.md)._
 
 ## Contributing
 

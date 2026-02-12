@@ -20,8 +20,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
-	"github.com/amacneil/dbmate/v2/pkg/dbutil"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbutil"
 
 	_ "github.com/duckdb/duckdb-go/v2" // database/sql driver
 	"github.com/lib/pq"

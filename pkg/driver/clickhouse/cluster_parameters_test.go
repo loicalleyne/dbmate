@@ -3,7 +3,7 @@ package clickhouse
 import (
 	"testing"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbtest"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbtest"
 
 	"github.com/stretchr/testify/require"
 )

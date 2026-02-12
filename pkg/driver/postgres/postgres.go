@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/amacneil/dbmate/v2/pkg/dbmate"
-	"github.com/amacneil/dbmate/v2/pkg/dbutil"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
+	"github.com/loicalleyne/dbmate/v2/pkg/dbutil"
 
 	"github.com/lib/pq"
 )
@@ -253,7 +253,7 @@ func (drv *Driver) DumpSchema(db *sql.DB) ([]byte, error) {
 
 	// PostgreSQL 15.14+/16.10+/17.6+ adds \restrict/\unrestrict commands to pg_dump output with a random key
 	// by default, making the output non-deterministic. Use a fixed key for reproducible output.
-	// See: https://github.com/amacneil/dbmate/issues/678
+	// See: https://github.com/loicalleyne/dbmate/issues/678
 	if version := getPgDumpVersion(); version.supportsRestrictKey() {
 		args = append(args, "--restrict-key=dbmate")
 	}
@@ -416,7 +416,7 @@ func (drv *Driver) DeleteMigration(db dbutil.Transaction, version string) error 
 func (drv *Driver) Ping() error {
 	// attempt connection to primary database, not "postgres" database
 	// to support servers with no "postgres" database
-	// (see https://github.com/amacneil/dbmate/issues/78)
+	// (see https://github.com/loicalleyne/dbmate/issues/78)
 	db, err := drv.Open()
 	if err != nil {
 		return err
