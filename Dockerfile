@@ -20,6 +20,11 @@ RUN apt-get update \
 RUN curl -fsSL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
   | sh -s -- -b /usr/local/bin v2.8.0
 
+# Download and install DuckDB
+RUN curl -fsSL https://github.com/duckdb/duckdb/releases/download/v1.1.0/duckdb_cli-linux-amd64.zip -o duckdb_cli-linux-amd64.zip \
+  && unzip duckdb_cli-linux-amd64.zip \
+  && mv duckdb /usr/local/bin/duckdb
+
 # download modules
 COPY go.* /src/
 RUN go mod download
