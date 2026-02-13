@@ -12,7 +12,9 @@ package duckdb
 
 import (
 	"bytes"
+	"context"
 	"database/sql"
+	"database/sql/driver"
 	"fmt"
 	"io"
 	"net/url"
@@ -23,7 +25,7 @@ import (
 	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
 	"github.com/loicalleyne/dbmate/v2/pkg/dbutil"
 
-	_ "github.com/duckdb/duckdb-go/v2" // database/sql driver
+	duckdb "github.com/duckdb/duckdb-go/v2" // database/sql driver
 	"github.com/lib/pq"
 )
 
@@ -75,7 +77,41 @@ func ConnectionString(u *url.URL) string {
 
 // Open creates a new database connection
 func (drv *Driver) Open() (*sql.DB, error) {
-	return sql.Open("duckdb", ConnectionString(drv.databaseURL))
+	connector, err := duckdb.NewConnector(ConnectionString(drv.databaseURL), func(execer driver.ExecerContext) error {
+		communityExtensions := strings.Split(os.Getenv("DUCKDB_COMMUNITY_EXTENSIONS"), ",")
+		coreExtensions := strings.Split(os.Getenv("DUCKDB_CORE_EXTENSIONS"), ",")
+		var bootQueries []string
+		for _, ext := range communityExtensions {
+			ext = strings.TrimSpace(ext)
+			if ext != "" {
+				bootQueries = append(bootQueries, fmt.Sprintf("INSTALL %s FROM community;", ext))
+				bootQueries = append(bootQueries, fmt.Sprintf("LOAD %s;", ext))
+			}
+		}
+		for _, ext := range coreExtensions {
+			ext = strings.TrimSpace(ext)
+			if ext != "" {
+				switch ext {
+				case "autocomplete", "avro", "aws", "azure", "delta", "ducklake", "encodings", "excel", "fts", "httpfs", "http", "https", "s3", "iceberg", "icu", "inet", "jemalloc", "json", "motherduck", "md", "mysql", "mysql_scanner", "parquet", "postgres", "postgres_scanner", "spatial", "sqlite", "sqlite_scanner", "sqlite3", "tpcds", "tpch", "unity_catalog", "uc_catalog", "ui", "vortex", "vss":
+					bootQueries = append(bootQueries, fmt.Sprintf("INSTALL %s;", ext))
+					bootQueries = append(bootQueries, fmt.Sprintf("LOAD %s;", ext))
+				default:
+				}
+
+			}
+		}
+		for _, qry := range bootQueries {
+			_, err := execer.ExecContext(context.Background(), qry, nil)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return sql.OpenDB(connector), nil
 }
 
 func (drv *Driver) CreateDatabase() error {
@@ -202,8 +238,8 @@ func (drv *Driver) MigrationsTableExists(db *sql.DB) (bool, error) {
 	// TODO: Change this query. duckdb supports schemas and tables.
 	// May need to look at another drive to see how they handle this.
 	err := db.QueryRow("SELECT 1 FROM information_schema.tables "+
-			"WHERE  table_schema = 'main' "+
-			"AND    table_name   = ?",
+		"WHERE  table_schema = 'main' "+
+		"AND    table_name   = ?",
 		drv.migrationsTableName).
 		Scan(&exists)
 	if err == sql.ErrNoRows {
