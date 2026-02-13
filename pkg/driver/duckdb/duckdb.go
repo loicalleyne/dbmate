@@ -14,7 +14,6 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"database/sql/driver"
 	"fmt"
 	"io"
 	"net/url"
@@ -22,10 +21,11 @@ import (
 	"regexp"
 	"strings"
 
+	_ "github.com/duckdb/duckdb-go/v2"
 	"github.com/loicalleyne/dbmate/v2/pkg/dbmate"
 	"github.com/loicalleyne/dbmate/v2/pkg/dbutil"
 
-	duckdb "github.com/duckdb/duckdb-go/v2" // database/sql driver
+	// database/sql driver
 	"github.com/lib/pq"
 )
 
@@ -77,41 +77,45 @@ func ConnectionString(u *url.URL) string {
 
 // Open creates a new database connection
 func (drv *Driver) Open() (*sql.DB, error) {
-	connector, err := duckdb.NewConnector(ConnectionString(drv.databaseURL), func(execer driver.ExecerContext) error {
-		communityExtensions := strings.Split(os.Getenv("DUCKDB_COMMUNITY_EXTENSIONS"), ",")
-		coreExtensions := strings.Split(os.Getenv("DUCKDB_CORE_EXTENSIONS"), ",")
-		var bootQueries []string
-		for _, ext := range communityExtensions {
-			ext = strings.TrimSpace(ext)
-			if ext != "" {
-				bootQueries = append(bootQueries, fmt.Sprintf("INSTALL %s FROM community;", ext))
-				bootQueries = append(bootQueries, fmt.Sprintf("LOAD %s;", ext))
-			}
-		}
-		for _, ext := range coreExtensions {
-			ext = strings.TrimSpace(ext)
-			if ext != "" {
-				switch ext {
-				case "autocomplete", "avro", "aws", "azure", "delta", "ducklake", "encodings", "excel", "fts", "httpfs", "http", "https", "s3", "iceberg", "icu", "inet", "jemalloc", "json", "motherduck", "md", "mysql", "mysql_scanner", "parquet", "postgres", "postgres_scanner", "spatial", "sqlite", "sqlite_scanner", "sqlite3", "tpcds", "tpch", "unity_catalog", "uc_catalog", "ui", "vortex", "vss":
-					bootQueries = append(bootQueries, fmt.Sprintf("INSTALL %s;", ext))
-					bootQueries = append(bootQueries, fmt.Sprintf("LOAD %s;", ext))
-				default:
-				}
-
-			}
-		}
-		for _, qry := range bootQueries {
-			_, err := execer.ExecContext(context.Background(), qry, nil)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	})
+	db, err := sql.Open("duckdb", ConnectionString(drv.databaseURL))
 	if err != nil {
 		return nil, err
 	}
-	return sql.OpenDB(connector), nil
+	// Install and load extensions
+	communityExtensions := strings.Split(os.Getenv("DUCKDB_COMMUNITY_EXTENSIONS"), ",")
+	coreExtensions := strings.Split(os.Getenv("DUCKDB_CORE_EXTENSIONS"), ",")
+	var bootQueries []string
+
+	for _, ext := range communityExtensions {
+		ext = strings.TrimSpace(ext)
+		if ext != "" {
+			// bootQueries = append(bootQueries, fmt.Sprintf("INSTALL %s FROM community;", ext))
+			bootQueries = append(bootQueries, fmt.Sprintf("LOAD %s;", ext))
+		}
+	}
+	for _, ext := range coreExtensions {
+		ext = strings.TrimSpace(ext)
+		if ext != "" {
+			switch ext {
+			case "autocomplete", "avro", "aws", "azure", "delta", "ducklake", "encodings", "excel", "fts", "httpfs", "http", "https", "s3", "iceberg", "icu", "inet", "jemalloc", "json", "motherduck", "md", "mysql", "mysql_scanner", "parquet", "postgres", "postgres_scanner", "spatial", "sqlite", "sqlite_scanner", "sqlite3", "tpcds", "tpch", "unity_catalog", "uc_catalog", "ui", "vortex", "vss":
+				bootQueries = append(bootQueries, fmt.Sprintf("INSTALL %s;", ext))
+				bootQueries = append(bootQueries, fmt.Sprintf("LOAD %s;", ext))
+			default:
+			}
+		}
+	}
+
+	for _, qry := range bootQueries {
+		fmt.Printf("Executing query: %s\n", qry)
+		_, err := db.ExecContext(context.Background(), qry)
+		if err != nil {
+			fmt.Printf("Error executing query: %s\n%v\n", qry, err)
+			db.Close()
+			return nil, err
+		}
+	}
+
+	return db, nil
 }
 
 func (drv *Driver) CreateDatabase() error {
